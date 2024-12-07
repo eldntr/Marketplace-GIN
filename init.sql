@@ -155,20 +155,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-
--- -----------------------------------------------------
--- Table `marketplace`.`migrations`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `marketplace`.`migrations` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `migration` VARCHAR(255) NOT NULL,
-  `batch` INT NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-AUTO_INCREMENT = 15
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
-
+-- Table structures for core tables continue...
 
 -- -----------------------------------------------------
 -- Table `marketplace`.`orders`
@@ -190,7 +177,6 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
-
 
 -- -----------------------------------------------------
 -- Table `marketplace`.`order_items`
@@ -219,7 +205,6 @@ AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-
 -- -----------------------------------------------------
 -- Table `marketplace`.`replies`
 -- -----------------------------------------------------
@@ -244,7 +229,6 @@ CREATE TABLE IF NOT EXISTS `marketplace`.`replies` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
-
 
 -- -----------------------------------------------------
 -- Table `marketplace`.`reviews`
@@ -271,25 +255,6 @@ CREATE TABLE IF NOT EXISTS `marketplace`.`reviews` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
-
-
--- -----------------------------------------------------
--- Table `marketplace`.`sessions`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `marketplace`.`sessions` (
-  `id` VARCHAR(255) NOT NULL,
-  `user_id` BIGINT UNSIGNED NULL DEFAULT NULL,
-  `ip_address` VARCHAR(45) NULL DEFAULT NULL,
-  `user_agent` TEXT NULL DEFAULT NULL,
-  `payload` TEXT NOT NULL,
-  `last_activity` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `sessions_user_id_index` (`user_id` ASC),
-  INDEX `sessions_last_activity_index` (`last_activity` ASC))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
-
 
 -- -----------------------------------------------------
 -- Table `marketplace`.`transactions`
@@ -318,7 +283,6 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-
 -- -----------------------------------------------------
 -- Table `marketplace`.`wishlists`
 -- -----------------------------------------------------
@@ -343,7 +307,6 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
-
 
 -- Insert initial data
 INSERT INTO `marketplace`.`users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES

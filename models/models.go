@@ -60,12 +60,6 @@ type Discussion struct {
     UpdatedAt time.Time `json:"updated_at"`
 }
 
-type Migration struct {
-    ID        uint64    `gorm:"primaryKey" json:"id"`
-    Migration string    `json:"migration"`
-    Batch     int       `json:"batch"`
-}
-
 type Order struct {
     ID        uint64    `gorm:"primaryKey" json:"id"`
     BuyerID   uint64    `json:"buyer_id"`
@@ -102,15 +96,6 @@ type Review struct {
     Comment   string    `json:"comment"`
     CreatedAt time.Time `json:"created_at"`
     UpdatedAt time.Time `json:"updated_at"`
-}
-
-type Session struct {
-    ID           string    `gorm:"primaryKey" json:"id"`
-    UserID       uint64    `json:"user_id"`
-    IPAddress    string    `json:"ip_address"`
-    UserAgent    string    `json:"user_agent"`
-    Payload      string    `json:"payload"`
-    LastActivity int       `json:"last_activity"`
 }
 
 type Transaction struct {
