@@ -70,3 +70,15 @@ func DeleteReview(c *gin.Context) {
     database.DB.Delete(&review)
     c.JSON(http.StatusOK, gin.H{"message": "Review deleted"})
 }
+
+func GetReviewsByProductID(c *gin.Context) {
+    productID := c.Param("product_id")
+    
+    var reviews []models.Review
+    if err := database.DB.Where("product_id = ?", productID).Find(&reviews).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching reviews: " + err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, reviews)
+}
