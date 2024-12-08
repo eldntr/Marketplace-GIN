@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"marketplace-gin/handlers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RegisterUserRoutes(r *gin.Engine) {

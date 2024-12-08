@@ -14,35 +14,32 @@ import (
 
 func CreateUserAuth(c *gin.Context) {
 
-	var authInput models.AuthInput
-
-	if err := c.ShouldBindJSON(&authInput); err != nil {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var userFound models.User
-	database.DB.Where("email=?", authInput.Email).Find(&userFound)
-
-	if userFound.ID != 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "email already used"})
+	if err := database.DB.Where("email = ?", user.Email).First(&userFound).Error; err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already used"})
 		return
 	}
 
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(authInput.Password), bcrypt.DefaultCost)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user := models.User{
-		Email:    authInput.Email,
-		Password: string(passwordHash),
+	user.Password = string(passwordHash)
+
+	if err := database.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	database.DB.Create(&user)
-
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, user)
 
 }
 
@@ -56,7 +53,7 @@ func Login(c *gin.Context) {
 	}
 
 	var userFound models.User
-	database.DB.Where("username=?", authInput.Email).Find(&userFound)
+	database.DB.Where("email=?", authInput.Email).Find(&userFound)
 
 	if userFound.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
@@ -88,7 +85,5 @@ func GetUserProfile(c *gin.Context) {
 
 	user, _ := c.Get("currentUser")
 
-	c.JSON(200, gin.H{
-		"user": user,
-	})
+	c.JSON(200, user)
 }
