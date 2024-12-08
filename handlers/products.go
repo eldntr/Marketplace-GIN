@@ -36,6 +36,15 @@ func GetProduct(c *gin.Context) {
     c.JSON(http.StatusOK, product)
 }
 
+func GetAllProducts(c *gin.Context) {
+    var products []models.Product
+    if err := database.DB.Find(&products).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, products)
+}
+
 func UpdateProduct(c *gin.Context) {
     var product models.Product
     id, err := strconv.ParseUint(c.Param("id"), 10, 64)

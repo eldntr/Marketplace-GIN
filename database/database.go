@@ -25,7 +25,7 @@ func isDatabaseEmpty() bool {
 
 func executeSQLFile(filepath string) {
 	content, err := os.ReadFile(filepath)
-	if err != nil {
+	if (err != nil) {
 		log.Fatalf("Could not read SQL file: %v", err)
 	}
 
@@ -52,7 +52,6 @@ func ConnectDB() {
 	dbUser := os.Getenv("DB_USERNAME")
 	dbPass := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_DATABASE")
-	dbURL := os.Getenv("DB_URL")
 
 	// Create database if using MySQL/MariaDB
 	if dbConnection == "mysql" || dbConnection == "mariadb" {
@@ -64,7 +63,7 @@ func ConnectDB() {
 			log.Fatalf("Could not connect to MySQL server: %v", err)
 		}
 		// Create database if not exists
-		tempDB.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName))
+		tempDB.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s`", dbName))
 	}
 
 	var dialector gorm.Dialector
@@ -95,16 +94,6 @@ func ConnectDB() {
 	})
 	if err != nil {
 		log.Fatalf("Could not connect to the database: %v", err)
-	}
-
-	// Create database if using MySQL/MariaDB
-	if dbConnection == "mysql" || dbConnection == "mariadb" {
-		// Create database if not exists
-		tempDB, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s):%s/",
-			dbUser, dbPass, dbHost, dbPort, dbURL)), &gorm.Config{})
-		if err == nil {
-			tempDB.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName))
-		}
 	}
 }
 
