@@ -78,28 +78,54 @@ func ReplyDiscussion(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parent ID"})
         return
     }
+
+    // Verify parent discussion exists
+    var parentDiscussion models.Discussion
+    if err := database.DB.First(&parentDiscussion, parentID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Parent discussion not found"})
+        return
+    }
+
     if err := c.ShouldBindJSON(&reply); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+
+    // Set the product_id same as parent discussion
+    reply.ProductID = parentDiscussion.ProductID
     reply.ParentID = &parentID
+
     if err := database.DB.Create(&reply).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
+
     c.JSON(http.StatusOK, reply)
 }
 
 func GetDiscussionsByProduct(c *gin.Context) {
     var discussions []models.Discussion
-    productID, err := strconv.ParseUint(c.Param("productId"), 10, 64) // Changed product_id to productId
+    productID, err := strconv.ParseUint(c.Param("productId"), 10, 64)
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
         return
     }
-    if err := database.DB.Where("product_id = ?", productID).Find(&discussions).Error; err != nil {
+
+    // Get main discussions (where parent_id is NULL)
+    if err := database.DB.Where("product_id = ? AND parent_id IS NULL", productID).Find(&discussions).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
+
+    // For each discussion, get its replies
+    for i := range discussions {
+        var replies []models.Discussion
+        if err := database.DB.Where("parent_id = ?", discussions[i].ID).Find(&replies).Error; err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+        discussions[i].Replies = replies
+    }
+
     c.JSON(http.StatusOK, discussions)
 }

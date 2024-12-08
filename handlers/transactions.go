@@ -30,6 +30,12 @@ func GetTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
+
+	if transaction.UserID == 0 || transaction.CartID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "UserID and CartID are required"})
+		return
+	}
+
 	if err := database.DB.First(&transaction, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Transaction not found"})
 		return
@@ -52,6 +58,11 @@ func UpdateTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	database.DB.Model(&transaction).Updates(models.Transaction{
+		TotalAmount: transaction.TotalAmount,
+	})
+
 	transaction.ID = id
 	database.DB.Save(&transaction)
 	c.JSON(http.StatusOK, transaction)
@@ -89,9 +100,14 @@ func CheckoutCart(c *gin.Context) {
 	// Hitung Total Harga
 	var totalAmount float64
 	for _, item := range cart.CartItems {
-		totalAmount += float64(item.Quantity) * item.Price
+		if item.Product.Stock < item.Quantity {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Insufficient stock for product " + item.Product.Name})
+			return
+		}
+		item.Product.Stock -= item.Quantity
+		database.DB.Save(&item.Product)
+		totalAmount += float64(item.Quantity) * item.Product.Price
 	}
-
 	// Buat Transaksi
 	transaction := models.Transaction{
 		UserID:        cart.BuyerID,
@@ -104,6 +120,8 @@ func CheckoutCart(c *gin.Context) {
 		return
 	}
 
+	database.DB.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{})
+
 	c.JSON(http.StatusOK, transaction)
 }
 
@@ -115,13 +133,16 @@ func PayTransaction(c *gin.Context) {
 		return
 	}
 
-	// Ambil Transaksi
 	if err := database.DB.First(&transaction, transactionID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Transaction not found"})
 		return
 	}
 
-	// Update Status Pembayaran
+	if transaction.PaymentStatus == "Paid" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Transaction already paid"})
+		return
+	}
+
 	transaction.PaymentStatus = "Paid"
 	if err := database.DB.Save(&transaction).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

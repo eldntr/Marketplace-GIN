@@ -8,9 +8,9 @@ import (
 func RegisterProductRoutes(r *gin.Engine) {
 	// Products routes
 	r.POST("/products", handlers.CreateProduct)
+	r.GET("/products/search", handlers.SearchProducts)  // moved before :id route
 	r.GET("/products/:id", handlers.GetProduct)
 	r.GET("/products", handlers.GetAllProducts)
 	r.PUT("/products/:id", handlers.UpdateProduct)
 	r.DELETE("/products/:id", handlers.DeleteProduct)
-	r.GET("/products/search", handlers.SearchProducts)
 }
