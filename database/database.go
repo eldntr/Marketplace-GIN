@@ -108,5 +108,5 @@ func InitializeDB() {
 }
 
 func MigrateDB() {
-	DB.AutoMigrate(&models.User{}, &models.Cart{}, &models.Category{}, &models.Product{}, &models.CartItem{}, &models.Discussion{}, &models.Order{}, &models.OrderItem{}, &models.Reply{}, &models.Review{}, &models.Transaction{}, &models.Wishlist{}, &models.Seller{})
+	DB.AutoMigrate(&models.User{}, &models.Cart{}, &models.Category{}, &models.Product{}, &models.CartItem{}, &models.Discussion{}, &models.Order{}, &models.OrderItem{}, &models.Reply{}, &models.Review{}, &models.Transaction{}, &models.Wishlist{})
 }
