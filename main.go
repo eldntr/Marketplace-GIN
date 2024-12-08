@@ -39,7 +39,6 @@ func main() {
 	routes.RegisterReviewRoutes(r)
 	routes.RegisterTransactionRoutes(r)
 	routes.RegisterWishlistRoutes(r)
-	routes.RegisterSellerRoutes(r)
 
 	r.Run(":8080")
 }
