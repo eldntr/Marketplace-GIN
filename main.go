@@ -22,7 +22,7 @@ func main() {
 		})
 	})
 
-	r.POST("/auth/signup", handlers.CreateUser)
+	r.POST("/auth/signup", handlers.CreateUserAuth)
 	r.POST("/auth/login", handlers.Login)
 	r.GET("/user/profile", middlewares.CheckAuth, handlers.GetUserProfile)
 	r.POST("/cart/:cart_id/checkout", handlers.CheckoutCart)
