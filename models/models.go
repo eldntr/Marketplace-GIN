@@ -49,6 +49,7 @@ type CartItem struct {
 	Quantity  int       `json:"quantity"`
 	Price     float64   `json:"price"`
 	SubTotal  float64   `json:"subtotal"`
+	Product   Product   `gorm:"foreignKey:ProductID" json:"product"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

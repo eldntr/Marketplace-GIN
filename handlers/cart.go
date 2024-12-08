@@ -20,6 +20,10 @@ func CreateCart(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	if cart.BuyerID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "BuyerID is required"})
+		return
+	}
 	c.JSON(http.StatusOK, cart)
 }
 
@@ -30,7 +34,7 @@ func GetCart(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	if err := database.DB.First(&cart, id).Error; err != nil {
+	if err := database.DB.Preload("CartItems.Product").First(&cart, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Cart not found"})
 		return
 	}
@@ -52,6 +56,7 @@ func UpdateCart(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	cart.ID = id
 	database.DB.Save(&cart)
 	c.JSON(http.StatusOK, cart)
