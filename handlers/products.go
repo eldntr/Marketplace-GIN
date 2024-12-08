@@ -79,3 +79,17 @@ func DeleteProduct(c *gin.Context) {
     database.DB.Delete(&product)
     c.JSON(http.StatusOK, gin.H{"message": "Product deleted"})
 }
+
+func SearchProducts(c *gin.Context) {
+    var products []models.Product
+    query := c.Query("name")
+    if query == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Query parameter 'name' is required"})
+        return
+    }
+    if err := database.DB.Where("name LIKE ?", "%"+query+"%").Find(&products).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    c.JSON(http.StatusOK, products)
+}

@@ -12,4 +12,5 @@ func RegisterProductRoutes(r *gin.Engine) {
 	r.GET("/products", handlers.GetAllProducts)
 	r.PUT("/products/:id", handlers.UpdateProduct)
 	r.DELETE("/products/:id", handlers.DeleteProduct)
-}	
+	r.GET("/products/search", handlers.SearchProducts)
+}
