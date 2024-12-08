@@ -137,12 +137,14 @@ CREATE TABLE IF NOT EXISTS `marketplace`.`discussions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
+  `parent_id` BIGINT UNSIGNED DEFAULT NULL,
   `content` TEXT NOT NULL,
   `created_at` TIMESTAMP NULL DEFAULT NULL,
   `updated_at` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `discussions_product_id_foreign` (`product_id` ASC),
   INDEX `discussions_user_id_foreign` (`user_id` ASC),
+  INDEX `discussions_parent_id_foreign` (`parent_id` ASC),
   CONSTRAINT `discussions_product_id_foreign`
     FOREIGN KEY (`product_id`)
     REFERENCES `marketplace`.`products` (`id`)
@@ -150,6 +152,10 @@ CREATE TABLE IF NOT EXISTS `marketplace`.`discussions` (
   CONSTRAINT `discussions_user_id_foreign`
     FOREIGN KEY (`user_id`)
     REFERENCES `marketplace`.`users` (`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `discussions_parent_id_foreign`
+    FOREIGN KEY (`parent_id`)
+    REFERENCES `marketplace`.`discussions` (`id`)
     ON DELETE CASCADE ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4

@@ -53,15 +53,6 @@ type CartItem struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type Discussion struct {
-	ID        uint64    `gorm:"primaryKey" json:"id"`
-	ProductID uint64    `json:"product_id"`
-	UserID    uint64    `json:"user_id"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 type Order struct {
 	ID        uint64    `gorm:"primaryKey" json:"id"`
 	BuyerID   uint64    `json:"buyer_id"`
