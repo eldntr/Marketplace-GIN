@@ -18,6 +18,7 @@ func GetSellerSummary(c *gin.Context) {
 	var totalSales int64
 	var totalProducts int64
 	var totalRevenue float64
+	var inProcess int64
 
 	// Menghitung total penjualan
 	if err := database.DB.Model(&models.Order{}).Count(&totalSales).Error; err != nil {
@@ -37,11 +38,18 @@ func GetSellerSummary(c *gin.Context) {
 		return
 	}
 
+	// Menghitung jumlah pesanan yang sedang diproses
+	if err := database.DB.Model(&models.Order{}).Where("status = ?", "pending").Count(&inProcess).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	// Menyusun ringkasan penjualan
 	var summary = map[string]interface{}{
-		"totalSales":    totalSales,
-		"totalProducts": totalProducts,
-		"totalRevenue":  totalRevenue,
+		"totalSales":      totalSales,
+		"totalProducts":   totalProducts,
+		"totalRevenue":    totalRevenue,
+		"ordersInProcess": inProcess,
 	}
 	c.JSON(http.StatusOK, summary)
 }
