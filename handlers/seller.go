@@ -15,11 +15,33 @@ func GetSellerDashboard(c *gin.Context) {
 
 // GetSellerSummary - Mengambil ringkasan penjualan
 func GetSellerSummary(c *gin.Context) {
-	// Logika untuk mengambil ringkasan penjualan
+	var totalSales int64
+	var totalProducts int64
+	var totalRevenue float64
+
+	// Menghitung total penjualan
+	if err := database.DB.Model(&models.Order{}).Count(&totalSales).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Menghitung total produk
+	if err := database.DB.Model(&models.Product{}).Count(&totalProducts).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Menghitung total pendapatan
+	if err := database.DB.Model(&models.Order{}).Select("SUM(total) as totalRevenue").Scan(&totalRevenue).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Menyusun ringkasan penjualan
 	var summary = map[string]interface{}{
-		"totalSales":    1000,  // Ganti dengan logika nyata
-		"totalProducts": 50,    // Ganti dengan logika nyata
-		"totalRevenue":  50000, // Ganti dengan logika nyata
+		"totalSales":    totalSales,
+		"totalProducts": totalProducts,
+		"totalRevenue":  totalRevenue,
 	}
 	c.JSON(http.StatusOK, summary)
 }
