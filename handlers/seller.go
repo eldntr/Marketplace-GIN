@@ -51,11 +51,27 @@ func GetSellerSummary(c *gin.Context) {
 		return
 	}
 
+	// Data untuk grafik (misalnya, total penjualan per bulan)
+	var salesData []struct {
+		Month string
+		Total int64
+	}
+	if err := database.DB.Raw(`
+        SELECT DATE_FORMAT(created_at, '%Y-%m') as Month, COUNT(*) as Total
+        FROM orders
+        WHERE seller_id = ?
+        GROUP BY Month
+    `, sellerID).Scan(&salesData).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	summary := gin.H{
 		"total_sales":       totalSales,
 		"total_products":    totalProducts,
 		"total_revenue":     totalRevenue,
 		"orders_in_process": inProcess,
+		"sales_data":        salesData,
 	}
 	c.JSON(http.StatusOK, summary)
 }
